@@ -1,0 +1,52 @@
+master:
+    image: jackytung/salt-master:2017.7.2
+    container_name: salt-master
+    hostname: salt-master
+    privileged: true
+    environment:
+        SALT_ROLE: master
+    expose:
+        - "4505"
+        - "4506"
+    volumes:
+        - ./srv:/srv:rw
+
+minion1-dev:
+    image: jackytung/salt-minion:2017.7.2
+    container_name: project-mgr-dev
+    hostname: project-mgr-dev
+    environment:
+        SALT_ROLE: minion
+        SALT_GRAINS: "{'component': 'mgr'}"
+    links: 
+        - master
+
+minion2-dev:
+    image: jackytung/salt-minion:2017.7.2
+    container_name: project-worker-dev
+    hostname: project-worker-dev
+    environment:
+        SALT_ROLE: minion
+        SALT_GRAINS: "{'component': 'worker'}"
+    links: 
+        - master
+
+minion1-sta:
+    image: jackytung/salt-minion:2017.7.2
+    container_name: project-mgr-sta
+    hostname: project-mgr-sta
+    environment:
+        SALT_ROLE: minion
+        SALT_GRAINS: "{'component': 'mgr'}"
+    links: 
+        - master
+
+minion2-sta:
+    image: jackytung/salt-minion:2017.7.2
+    container_name: project-worker-sta
+    hostname: project-worker-sta
+    environment:
+        SALT_ROLE: minion
+        SALT_GRAINS: "{'component': 'worker'}"
+    links: 
+        - master
