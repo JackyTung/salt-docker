@@ -1,0 +1,32 @@
+FROM ubuntu:14.04
+
+MAINTAINER Jacky_Tung <jackytung8085@gmail.com>
+
+# Update system
+RUN apt-get update && \
+	    apt-get install -y wget \
+        curl \
+        dnsutils \
+        python-pip \
+        python-dev \
+        python-apt \
+        software-properties-common \
+        dmidecode \
+        vim \
+        && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV SALT_VERSION=2017.7.2
+
+RUN wget -O - https://repo.saltstack.com/apt/ubuntu/14.04/amd64/archive/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub | sudo apt-key add -
+RUN echo "deb http://repo.saltstack.com/apt/ubuntu/14.04/amd64/archive/${SALT_VERSION} trusty main" >> /etc/apt/sources.list.d/saltstack.list
+RUN apt-get update && \
+    apt-get install -y salt-minion
+
+# Add salt config files
+ADD etc/salt/minion /etc/salt/minion
+
+# Add and start service
+ADD start.sh /start.sh
+CMD ["bash", "start.sh"]
